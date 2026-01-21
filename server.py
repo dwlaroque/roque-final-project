@@ -10,9 +10,6 @@ def index():
 @app.route("/emotionDetector", methods=["GET"])
 def emotion_detection():
     text_to_analyze = request.args.get("textToAnalyze", "")
-    if not text_to_analyze.strip():
-        return "Please provide valid text for analysis."
-
     emotions = emotion_detector(text_to_analyze)
 
     if emotions.get("dominant_emotion") is None:
@@ -31,4 +28,4 @@ def emotion_detection():
     return response_text
 
 if __name__ == "__main__":
-    app.run(host = "localhost", port = 5000, debug = True)
+    app.run(host = "localhost", port = 5002, debug = True)

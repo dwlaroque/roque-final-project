@@ -9,10 +9,10 @@ def get_dominant_emotion(emotions):
 def emotion_detector(text_to_analyze):
     url = 'https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict'
     headers = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
-    obj = {"raw_document": { "text": text_to_analyze }}
+    obj = {"raw_document": { "text": text_to_analyze if text_to_analyze is not None else " "}}
 
     try:
-        response = requests.post(url, json = obj, headers = headers)
+        response = requests.post(url, json = obj, headers = headers, timeout=10)
     except Exception:
         return {
             "anger": None,
@@ -20,9 +20,22 @@ def emotion_detector(text_to_analyze):
             "fear": None,
             "joy": None,
             "sadness": None,
-            "dominant_emotion": None
+            "dominant_emotion": None,
+            "status_code": None,
         }
     
+    #If input is purely numeric
+    if text_to_analyze.isdigit():
+        return {
+            "anger": None,
+            "disgust": None,
+            "fear": None,
+            "joy": None,
+            "sadness": None,
+            "dominant_emotion": None,
+            "status_code": 400,
+        }
+        
     #If Error 400 or blank input:
     if getattr(response, "status_code", None) == 400:
         return {
@@ -31,7 +44,8 @@ def emotion_detector(text_to_analyze):
             "fear": None,
             "joy": None,
             "sadness": None,
-            "dominant_emotion": None
+            "dominant_emotion": None,
+            "status_code": 400,
         }
 
     try:
